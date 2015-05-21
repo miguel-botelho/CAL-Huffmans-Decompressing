@@ -7,6 +7,7 @@
 
 #include "readDir.h"
 #include "huffman.h"
+#include "huffcoding.cpp"
 #include "lzw.h"
 #include <algorithm>
 #include <iterator>
@@ -21,11 +22,10 @@ int main()
 	readDir directories;
 	directories.readDirectories("C:\\Users\\Miguel\\Desktop");
 
-	/* COMPRESS */
+	/* COMPRESS AND DECOMPRESS WITH LZW*/
 	for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
 	{
 		vector<int> compressed;
-
 
 		string diretorioUtilizado;
 		diretorioUtilizado = "C:\\Users\\Miguel\\Desktop";
@@ -33,7 +33,7 @@ int main()
 		diretorioUtilizado.append(directories.getFilenames().at(i).c_str());
 
 		string diretorioComprimido;
-		diretorioComprimido = "compressed_";
+		diretorioComprimido = "lzw\\compressed_lzw_";
 		diretorioComprimido.append(directories.getFilenames().at(i).c_str());
 
 		ifstream temp;
@@ -62,7 +62,7 @@ int main()
 
 		string decompressed = decompress(compressed.begin(), compressed.end());
 
-		string decompressed_name = "decompressed_";
+		string decompressed_name = "lzw\\decompressed_lzw_";
 		decompressed_name.append(directories.getFilenames().at(i).c_str());
 
 		ofstream decompressed_file;
@@ -74,6 +74,34 @@ int main()
 		}
 
 		decompressed_file.close();
+	}
+
+	/* COMPRESSED AND DECOMPRESSED WITH HUFFMAN */
+	for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
+	{
+		string encode = "C:\\Users\\Miguel\\Desktop\\";
+		encode.append(directories.getFilenames().at(i));
+
+		string decode = "huff\\compressed_huff_";
+		decode.append(directories.getFilenames().at(i));
+
+		FILE * in = fopen(encode.c_str(), "rb");
+		FILE * out = fopen(decode.c_str(), "wb");
+
+		memory_encode_file(in, out);
+
+		string dec = "huff\\decompressed_huff_";
+		dec.append(directories.getFilenames().at(i));
+
+		FILE * in1 = fopen(decode.c_str(), "rb");
+		FILE * out1 = fopen(dec.c_str(), "wb");
+
+		memory_decode_file(in1, out1);
+
+		fclose(in1);
+		fclose(in);
+		fclose(out);
+		fclose(out1);
 
 	}
 
