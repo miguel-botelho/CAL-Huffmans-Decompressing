@@ -19,6 +19,14 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+
+	if (argc != 3)
+	{
+		cout << "Número de argumentos errado." << endl << endl;
+		cout << "Usage: -huff/-lzw Diretorio" << endl;
+		return -1;
+	}
+
 	readDir directories;
 	string arg2(argv[2]);
 	clock_t start_d;
@@ -160,11 +168,14 @@ int main(int argc, char *argv[])
 			fclose(in);
 			fclose(out);
 			fclose(out1);
-
-			clock_t end;
-			end = clock();
-			cout << "Time elapsed doing hzw: " << (double)(end-start)/CLOCKS_PER_SEC << endl;
 		}
+		clock_t end;
+		end = clock();
+		cout << "Time elapsed doing hzw: " << (double)(end-start)/CLOCKS_PER_SEC << endl;
+	}
+	else
+	{
+		cout << "Método de compressão selecionado errado. Escolher -lzw ou -huff" << endl;
 	}
 	return 0;
 }
