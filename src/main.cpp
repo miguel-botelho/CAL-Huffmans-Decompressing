@@ -9,6 +9,7 @@
 #include "huffman.h"
 #include "huffcoding.cpp"
 #include "lzw.h"
+#include "lzw1.h"
 #include <algorithm>
 #include <iterator>
 #include <bitset>
@@ -43,10 +44,10 @@ int main(int argc, char *argv[])
 
 	if (strcmp(argv[1],"-lzw") == 0)
 	{
-		/* COMPRESS AND DECOMPRESS WITH LZW*/
+		//COMPRESS AND DECOMPRESS WITH LZW
 		for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
 		{
-			vector<int> compressed;
+			LZWCodec lzw;
 
 			string diretorioUtilizado;
 			diretorioUtilizado = arg2;
@@ -57,61 +58,41 @@ int main(int argc, char *argv[])
 			diretorioComprimido = "lzw\\compressed_lzw_";
 			diretorioComprimido.append(directories.getFilenames().at(i).c_str());
 
-			ifstream temp;
-			temp.open(diretorioUtilizado.c_str(), ios::binary);
-			if (!(temp.is_open()))
-			{
-				cout << "Erro a abrir o diretório introduzido pelo utilizador" << endl;
-				return 2;
-			}
-
-			ofstream file;
-			file.open(diretorioComprimido.c_str(), ios::binary);
-			if (!(file.is_open()))
-			{
-				cout << "Erro a abrir o diretório onde irão ser gravados os ficheiros" << endl;
-				return 3;
-			}
-
-			string conteudo;
-
-			while (!(temp.eof()))
-			{
-				string temp1;
-				getline(temp, temp1);
-				conteudo.append(temp1);
-			}
-
-			compress(conteudo, back_inserter(compressed));
-
-			directories.addCompressed(compressed);
-
-			copy(compressed.begin(), compressed.end(), ostream_iterator<int>(file));
-
-			temp.close();
-			file.close();
-
-			string decompressed = decompress(compressed.begin(), compressed.end());
+			FILE *inFile, *outFile, *outFile1;
 
 			string decompressed_name = "lzw\\decompressed_lzw_";
 			decompressed_name.append(directories.getFilenames().at(i).c_str());
 
-			ofstream decompressed_file;
-			decompressed_file.open(decompressed_name.c_str());
-			if (!(decompressed_file.is_open()))
-			{
-				cout << "Erro a abrir o diretório onde irão ser gravados os ficheiros" << endl;
-				return 4;
-			}
+			inFile = fopen(diretorioUtilizado.c_str(), "rb");
+			outFile = fopen(diretorioComprimido.c_str(), "wb");
+			outFile1 = fopen(decompressed_name.c_str(), "wb");
 
-			for (unsigned int j = 0; j < decompressed.length(); j++)
-			{
-				decompressed_file << decompressed.at(j);
-			}
+			long curPos, endPos;
+			curPos = ftell(inFile);
+			fseek(inFile, 0, 2);
+			endPos = ftell(inFile);
+			fseek(inFile, curPos, 0);
+			size_t conteudoLength = endPos;
 
-			decompressed_file.close();
+			char *buffer = (char *) malloc(conteudoLength);
+
+			vector<unsigned char> conteudo(conteudoLength);
+			vector<unsigned char> decoded;
+			vector<unsigned char> encoded;
+
+			fread(&conteudo[0], 1, conteudo.size(), inFile);
+
+			lzw.encode(conteudo, encoded);
+			lzw.decode(encoded, decoded);
+
+			fwrite(&encoded[0], 1, encoded.size(), outFile);
+			fwrite(&decoded[0], 1, decoded.size(), outFile1);
+
+			fclose(inFile);
+			fclose(outFile);
+			fclose(outFile1);
+			free(buffer);
 		}
-
 		clock_t end;
 		end = clock();
 		cout << "Time elapsed doing lzw: " << (double)(end-start)/CLOCKS_PER_SEC;
@@ -121,7 +102,7 @@ int main(int argc, char *argv[])
 	{
 		clock_t start;
 		start = clock();
-		/* COMPRESSED AND DECOMPRESSED WITH HUFFMAN */
+		// COMPRESSED AND DECOMPRESSED WITH HUFFMAN
 		for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
 		{
 			string encode = arg2;

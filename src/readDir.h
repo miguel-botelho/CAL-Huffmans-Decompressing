@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <dirent.h>
+#include <winsock2.h>
 #include <windows.h>
 #include <iostream>
 #include <fstream>
