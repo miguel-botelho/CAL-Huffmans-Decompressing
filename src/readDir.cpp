@@ -16,7 +16,7 @@ int readDir::readDirectories(char * directory) {
 
 	if (dir != NULL) {
 	  while ((ent = readdir (dir)) != NULL) {
-		  string temp;
+		  string temp = "";
 		  temp = string(ent->d_name);
 		  if (temp.find(".") != string::npos)
 			  if (!(temp == "." || temp == ".."))

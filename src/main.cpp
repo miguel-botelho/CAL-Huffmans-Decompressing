@@ -8,7 +8,6 @@
 #include "readDir.h"
 #include "huffman.h"
 #include "huffcoding.cpp"
-#include "lzw.h"
 #include "lzw1.h"
 #include <algorithm>
 #include <iterator>
@@ -30,31 +29,29 @@ int main(int argc, char *argv[])
 
 	readDir directories;
 	string arg2(argv[2]);
-	clock_t start_d;
-	start_d = clock();
+	clock_t start_d = clock();
 	if (directories.readDirectories(argv[2]) != 0)
 	{
 		return 1;
 	}
-	clock_t end_d;
-	end_d = clock();
+	clock_t end_d = clock();
 	cout << "Time elapsed reading the directory: " << (double)(end_d-start_d)/CLOCKS_PER_SEC << endl;
-	clock_t start;
-	start = clock();
 
 	if (strcmp(argv[1],"-lzw") == 0)
 	{
+		clock_t start = clock();
+		start = clock();
 		//COMPRESS AND DECOMPRESS WITH LZW
 		for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
 		{
 			LZWCodec lzw;
 
-			string diretorioUtilizado;
+			string diretorioUtilizado = "";
 			diretorioUtilizado = arg2;
 			diretorioUtilizado.append("\\");
 			diretorioUtilizado.append(directories.getFilenames().at(i).c_str());
 
-			string diretorioComprimido;
+			string diretorioComprimido = "";
 			diretorioComprimido = "lzw\\compressed_lzw_";
 			diretorioComprimido.append(directories.getFilenames().at(i).c_str());
 
@@ -100,8 +97,7 @@ int main(int argc, char *argv[])
 
 	else if (strcmp(argv[1],"-huff")==0)
 	{
-		clock_t start;
-		start = clock();
+		clock_t start = clock();
 		// COMPRESSED AND DECOMPRESSED WITH HUFFMAN
 		for (unsigned int i = 0; i < directories.getFilenames().size(); i++)
 		{
@@ -150,8 +146,7 @@ int main(int argc, char *argv[])
 			fclose(out);
 			fclose(out1);
 		}
-		clock_t end;
-		end = clock();
+		clock_t end = clock();
 		cout << "Time elapsed doing hzw: " << (double)(end-start)/CLOCKS_PER_SEC << endl;
 	}
 	else

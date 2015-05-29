@@ -17,19 +17,18 @@
 #include <fstream>
 #include <cstdlib>
 
-using namespace std;
 class readDir {
 private:
-	vector<string> filenames;
-	vector<vector<int> > compressed;
+	std::vector<std::string> filenames;
+	std::vector<std::vector<int> > compressed;
 public:
-	vector<string> getFilenames();
-	vector<vector<int> > getCompressed();
-	void addCompressed(vector<int> compress);
-	vector<int>::iterator accessCompressBegin(int i){
+	std::vector<std::string> getFilenames();
+	std::vector<std::vector<int> > getCompressed();
+	void addCompressed(std::vector<int> compress);
+	std::vector<int>::iterator accessCompressBegin(int i){
 		return compressed.at(i).begin();
 	}
-	vector<int>::iterator accessCompressEnd(int i){
+	std::vector<int>::iterator accessCompressEnd(int i){
 		return compressed.at(i).end();
 	}
 	int readDirectories(char* directory);
